@@ -4,5 +4,7 @@ source "https://rubygems.org"
 
 # gem "rails"
 
-gem "rubocop", "~> 1.84"
 gem "gosu", "~> 1.4"
+gem "rubocop", "~> 1.84"
+
+gem "rspec", "~> 3.13"
