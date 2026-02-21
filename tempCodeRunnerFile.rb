@@ -10,9 +10,9 @@ class GameWindow < Gosu::Window
   def initialize(width = 800, height = 600, fullscreen: false)
     super
     self.caption = "Hello Animation"
-    @background = Gosu::Image.new(BACKGROUND, false)
-    @music = Gosu::Song.new(media_path("menu_music.mp3"))
-    @music.volume = 1.0
+    @background = Gosu::Image.new(self, BACKGROUND, false)
+    @music = Gosu::Song.new(self, media_path("menu_music.mp3"))
+    @music.volume = 0.5
     @music.play(true)
     @animation = Explosion.load_animation(self)
     @sound = Explosion.load_sound(self)

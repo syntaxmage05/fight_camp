@@ -17,8 +17,16 @@ class Explosion
     )
   end
 
-  def initialize(animation, x, y)
+  def self.load_sound(window)
+    Gosu::Sample.new(
+      window, media_path("explosion.mp3")
+    )
+  end
+
+  def initialize(animation, sound, x, y)
     @animation = animation
+    # @sound = sound
+    sound.play
     @x = x
     @y = y
     @current_frame = 0
@@ -41,6 +49,10 @@ class Explosion
 
   def done?
     @done ||= @current_frame == @animation.size
+  end
+
+  def sound
+    @sound.play
   end
 
   private
