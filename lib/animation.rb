@@ -1,0 +1,59 @@
+# frozen_string_literal: true
+
+require "gosu"
+
+def media_path(file)
+  File.join(File.dirname(__FILE__, 2), "media", file)
+end
+
+# Animation class
+class Explosion
+  FRAME_DELAY = 10
+  SPRITE = media_path("explosion.png")
+
+  def self.load_animation(window)
+    Gosu::Image.load_tiles(
+      window, SPRITE, 128, 128, false
+    )
+  end
+
+  def initialize(animation, x, y)
+    @animation = animation
+    @x = x
+    @y = y
+    @current_frame = 0
+  end
+
+  def update
+    @current_frame += 1 if frame_expired?
+  end
+
+  def draw
+    return if done?
+
+    image = current_frame
+    image.draw(
+      @x - (image.width / 2.0),
+      @y - (image.height / 2.0),
+      0
+    )
+  end
+
+  def done?
+    @done ||= @current_frame == @animation.size
+  end
+
+  private
+
+  def current_frame
+    @animation[@current_frame % @animation.size]
+  end
+
+  def frame_expired?
+    now = Gosu.milliseconds
+    @last_frame ||= now
+    return false unless (now - @last_frame) > FRAME_DELAY
+
+    @last_frame = now
+  end
+end

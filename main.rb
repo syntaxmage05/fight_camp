@@ -1,49 +1,51 @@
 # frozen_string_literal: true
 
 require "gosu"
+require_relative "lib/animation"
 
 # Main class
 class GameWindow < Gosu::Window
-  def initialize(width = 320, height = 240, fullscreen: false)
+  BACKGROUND = media_path("country_field.png")
+
+  def initialize(width = 800, height = 600, fullscreen: false)
     super
-    self.caption = "Hello Movement"
-    @x = @y = 10
-    @draws = 0
-    @buttons_down = 0
+    self.caption = "Hello Animation"
+    @background = Gosu::Image.new(
+      self, BACKGROUND, false
+    )
+    @animation = Explosion.load_animation(self)
+    @explosions = []
   end
 
   def update
-    @x -= 1 if button_down?(Gosu::KbLeft)
-    @x += 1 if button_down?(Gosu::KbRight)
-    @y -= 1 if button_down?(Gosu::KbUp)
-    @y += 1 if button_down?(Gosu::KbDown)
+    @explosions.reject!(&:done?)
+    @explosions.map(&:update)
   end
 
   def button_down(id)
     close if id == Gosu::KbEscape
-    @buttons_down += 1
+
+    return unless id == Gosu::MsLeft
+
+    @explosions.push(
+      Explosion.new(
+        @animation, mouse_x, mouse_y
+      )
+    )
   end
 
-  def button_up(_id)
-    @buttons_down -= 1
+  def needs_cursor?
+    true
   end
 
   def needs_redraw?
-    @draws.zero? || @buttons_down.positive?
+    !@scene_ready || @explosions.any?
   end
 
   def draw
-    @draws += 1
-    @message = Gosu::Image.from_text(
-      self, info, Gosu.default_font_name, 30
-    )
-    @message.draw(@x, @y, 0)
-  end
-
-  private
-
-  def info
-    "Hello world"
+    @scene_ready ||= true
+    @background.draw(0, 0, 0)
+    @explosions.map(&:draw)
   end
 end
 
